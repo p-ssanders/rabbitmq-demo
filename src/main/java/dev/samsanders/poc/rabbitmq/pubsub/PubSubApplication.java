@@ -41,7 +41,8 @@ public class PubSubApplication {
   }
 
   @Bean
-  MessageListenerContainer messageListenerContainer(CachingConnectionFactory cachingConnectionFactory,
+  MessageListenerContainer messageListenerContainer(
+      CachingConnectionFactory cachingConnectionFactory,
       DemoMessageListener messageListener) {
     DirectMessageListenerContainer messageListenerContainer = new DirectMessageListenerContainer();
     messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
@@ -58,7 +59,8 @@ public class PubSubApplication {
   }
 
   @Bean
-  DemoMessagePublisher messagePublisher(CachingConnectionFactory cachingConnectionFactory,
+  DemoMessagePublisher messagePublisher(
+      CachingConnectionFactory cachingConnectionFactory,
       RabbitTemplate rabbitTemplate,
       ConfirmCallback confirmCallback) {
 
