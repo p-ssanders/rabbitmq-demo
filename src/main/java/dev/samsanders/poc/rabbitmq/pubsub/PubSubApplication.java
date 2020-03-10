@@ -2,6 +2,7 @@ package dev.samsanders.poc.rabbitmq.pubsub;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -24,13 +25,13 @@ public class PubSubApplication {
   }
 
   @Bean
-  TopicExchange exchange() {
-    return new TopicExchange(EXCHANGE_NAME);
+  DirectExchange exchange() {
+    return new DirectExchange(EXCHANGE_NAME);
   }
 
   @Bean
-  Binding binding(Queue queue, TopicExchange exchange) {
-    return BindingBuilder.bind(queue).to(exchange).with("foo.bar.#");
+  Binding binding(Queue queue, DirectExchange exchange) {
+    return BindingBuilder.bind(queue).to(exchange).withQueueName();
   }
 
   @Bean
@@ -57,6 +58,8 @@ public class PubSubApplication {
 
   @Bean
   MessagePublisher messagePublisher(RabbitTemplate rabbitTemplate) {
+    rabbitTemplate.setExchange(EXCHANGE_NAME);
+    rabbitTemplate.setRoutingKey(QUEUE_NAME);
     return new MessagePublisher(rabbitTemplate);
   }
 

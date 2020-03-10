@@ -14,12 +14,12 @@ public class MessagePublisher {
 
   public void publishMessage(String message) {
     System.out.println("Publishing message: " + message);
-    rabbitTemplate.convertAndSend(PubSubApplication.EXCHANGE_NAME, "foo.bar.wut", message);
+    rabbitTemplate.convertAndSend(message);
   }
 
   @EventListener
   public void onApplicationEvent(ContextRefreshedEvent event) {
-    this.publishMessage("hi there");
+    this.publishMessage("test message");
   }
 
 }
