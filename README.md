@@ -1,6 +1,16 @@
 #   RabbitMQ Demo
 
-Demonstrate basic publish/subscribe with RabbitMQ
+Demonstrate basic publish/subscribe with RabbitMQ.
+
+A single message publisher publishes test messages every two seconds to a direct exchange
+using a configured `RabbitTemplate`.
+Published messages are confirmed, and confirmation is processed asynchronously using the
+`DemoConfirmCallback` to demonstrate how message delivery can be guaranteed.
+
+A single message listener is registered to asynchronously consume messages from the queue.
+Messages are acknowledged manually to demonstrate the ability to process before acknowledgement.
+
+Both the exchange, and the queue are durable, and auto-delete.
 
 ##  Build
 
