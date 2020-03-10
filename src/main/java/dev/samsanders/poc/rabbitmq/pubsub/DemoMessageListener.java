@@ -12,7 +12,7 @@ public class DemoMessageListener implements ChannelAwareMessageListener {
 
   @Override
   public void onMessage(Message message, Channel channel) throws Exception {
-    logger.info(String.format("Received message: %s%n", message));
+    logger.info(String.format("Received message: %s", message));
     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
   }
 

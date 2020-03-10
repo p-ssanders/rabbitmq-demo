@@ -11,6 +11,6 @@ public class DemoConfirmCallback implements ConfirmCallback {
 
   @Override
   public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-    logger.info(String.format("Message publish confirmed: %s%n", ack));
+    logger.info(String.format("Message publish confirmed: %s", ack));
   }
 }
