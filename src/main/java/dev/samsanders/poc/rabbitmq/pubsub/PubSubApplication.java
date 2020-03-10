@@ -14,9 +14,7 @@ import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @SpringBootApplication
 @EnableScheduling
@@ -31,12 +29,12 @@ public class PubSubApplication {
 
   @Bean
   Queue queue() {
-    return new Queue(QUEUE_NAME, false);
+    return new Queue(QUEUE_NAME, true, false, true);
   }
 
   @Bean
   DirectExchange exchange() {
-    return new DirectExchange(EXCHANGE_NAME);
+    return new DirectExchange(EXCHANGE_NAME, true, true);
   }
 
   @Bean
