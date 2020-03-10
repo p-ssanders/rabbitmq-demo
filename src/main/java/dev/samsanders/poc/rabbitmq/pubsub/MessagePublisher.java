@@ -13,7 +13,7 @@ public class MessagePublisher {
   }
 
   public void publishMessage(String message) {
-    System.out.println("Publishing message: " + message);
+    System.out.printf("Publishing message: %s%n", message);
     rabbitTemplate.convertAndSend(message);
   }
 

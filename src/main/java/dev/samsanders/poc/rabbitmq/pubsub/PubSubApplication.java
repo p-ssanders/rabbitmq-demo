@@ -4,10 +4,12 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
+import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,6 +20,10 @@ public class PubSubApplication {
 
   static final String EXCHANGE_NAME = "demo-exchange";
   static final String QUEUE_NAME = "demo-queue";
+
+  public static void main(String[] args) {
+    SpringApplication.run(PubSubApplication.class, args);
+  }
 
   @Bean
   Queue queue() {
@@ -35,36 +41,46 @@ public class PubSubApplication {
   }
 
   @Bean
-  SimpleMessageListenerContainer container(
-      ConnectionFactory connectionFactory,
-      MessageListenerAdapter listenerAdapter
-  ) {
-    SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-    container.setConnectionFactory(connectionFactory);
-    container.setQueueNames(QUEUE_NAME);
-    container.setMessageListener(listenerAdapter);
-    return container;
+  MessageListenerContainer messageListenerContainer(CachingConnectionFactory cachingConnectionFactory,
+      MessageListenerAdapter listenerAdapter) {
+    DirectMessageListenerContainer messageListenerContainer = new DirectMessageListenerContainer();
+    messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
+    messageListenerContainer.setQueueNames(QUEUE_NAME);
+    messageListenerContainer.setMessageListener(listenerAdapter);
+
+    return messageListenerContainer;
   }
 
   @Bean
-  MessageListenerAdapter listenerAdapter(MessageListener receiver) {
-    return new MessageListenerAdapter(receiver);
+  MessageListenerAdapter messageListenerAdapter(MessageListener messageListener) {
+    return new MessageListenerAdapter(messageListener);
   }
 
   @Bean
-  MessageListener messageReceiver() {
+  MessageListener messageListener() {
     return new MessageListener();
   }
 
   @Bean
-  MessagePublisher messagePublisher(RabbitTemplate rabbitTemplate) {
+  MessagePublisher messagePublisher(CachingConnectionFactory cachingConnectionFactory,
+      RabbitTemplate rabbitTemplate,
+      ConfirmCallback demoConfirmCallback) {
+
+    cachingConnectionFactory.setPublisherConfirmType(ConfirmType.CORRELATED);
+
     rabbitTemplate.setExchange(EXCHANGE_NAME);
     rabbitTemplate.setRoutingKey(QUEUE_NAME);
+    rabbitTemplate.setConnectionFactory(cachingConnectionFactory);
+    rabbitTemplate.setConfirmCallback(demoConfirmCallback);
+
     return new MessagePublisher(rabbitTemplate);
   }
 
-  public static void main(String[] args) {
-    SpringApplication.run(PubSubApplication.class, args);
+  @Bean
+  ConfirmCallback demoConfirmCallback() {
+    return (correlationData, ack, cause) -> {
+      System.out.printf("Message confirmed: %s%n", ack);
+    };
   }
 
 }
