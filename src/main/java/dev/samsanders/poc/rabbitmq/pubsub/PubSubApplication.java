@@ -52,35 +52,33 @@ public class PubSubApplication {
   }
 
   @Bean
-  MessageListenerAdapter messageListenerAdapter(MessageListener messageListener) {
+  MessageListenerAdapter messageListenerAdapter(DemoMessageListener messageListener) {
     return new MessageListenerAdapter(messageListener);
   }
 
   @Bean
-  MessageListener messageListener() {
-    return new MessageListener();
+  DemoMessageListener messageListener() {
+    return new DemoMessageListener();
   }
 
   @Bean
-  MessagePublisher messagePublisher(CachingConnectionFactory cachingConnectionFactory,
+  DemoMessagePublisher messagePublisher(CachingConnectionFactory cachingConnectionFactory,
       RabbitTemplate rabbitTemplate,
-      ConfirmCallback demoConfirmCallback) {
+      ConfirmCallback confirmCallback) {
 
     cachingConnectionFactory.setPublisherConfirmType(ConfirmType.CORRELATED);
 
     rabbitTemplate.setExchange(EXCHANGE_NAME);
     rabbitTemplate.setRoutingKey(QUEUE_NAME);
     rabbitTemplate.setConnectionFactory(cachingConnectionFactory);
-    rabbitTemplate.setConfirmCallback(demoConfirmCallback);
+    rabbitTemplate.setConfirmCallback(confirmCallback);
 
-    return new MessagePublisher(rabbitTemplate);
+    return new DemoMessagePublisher(rabbitTemplate);
   }
 
   @Bean
   ConfirmCallback demoConfirmCallback() {
-    return (correlationData, ack, cause) -> {
-      System.out.printf("Message confirmed: %s%n", ack);
-    };
+    return new DemoConfirmCallback();
   }
 
 }

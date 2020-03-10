@@ -4,11 +4,11 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
-public class MessagePublisher {
+public class DemoMessagePublisher {
 
   private final RabbitTemplate rabbitTemplate;
 
-  public MessagePublisher(RabbitTemplate rabbitTemplate) {
+  public DemoMessagePublisher(RabbitTemplate rabbitTemplate) {
     this.rabbitTemplate = rabbitTemplate;
   }
 
