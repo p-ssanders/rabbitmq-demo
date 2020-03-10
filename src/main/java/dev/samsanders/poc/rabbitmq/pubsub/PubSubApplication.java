@@ -1,5 +1,6 @@
 package dev.samsanders.poc.rabbitmq.pubsub;
 
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -10,7 +11,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -42,22 +42,18 @@ public class PubSubApplication {
 
   @Bean
   MessageListenerContainer messageListenerContainer(CachingConnectionFactory cachingConnectionFactory,
-      MessageListenerAdapter listenerAdapter) {
+      DemoMessageListener messageListener) {
     DirectMessageListenerContainer messageListenerContainer = new DirectMessageListenerContainer();
     messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
     messageListenerContainer.setQueueNames(QUEUE_NAME);
-    messageListenerContainer.setMessageListener(listenerAdapter);
+    messageListenerContainer.setMessageListener(messageListener);
+    messageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 
     return messageListenerContainer;
   }
 
   @Bean
-  MessageListenerAdapter messageListenerAdapter(DemoMessageListener messageListener) {
-    return new MessageListenerAdapter(messageListener);
-  }
-
-  @Bean
-  DemoMessageListener messageListener() {
+  DemoMessageListener demoMessageListener() {
     return new DemoMessageListener();
   }
 
