@@ -11,6 +11,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,21 +21,18 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class PubSubApplication {
 
-  static final String EXCHANGE_NAME = "demo-exchange";
-  static final String QUEUE_NAME = "demo-queue";
-
   public static void main(String[] args) {
     SpringApplication.run(PubSubApplication.class, args);
   }
 
   @Bean
-  Queue queue() {
-    return new Queue(QUEUE_NAME, true, false, true);
+  Queue queue(@Value("${app.queue.name}") String queueName) {
+    return new Queue(queueName, true, false, true);
   }
 
   @Bean
-  DirectExchange exchange() {
-    return new DirectExchange(EXCHANGE_NAME, true, true);
+  DirectExchange exchange(@Value("${app.exchange.name}") String exchangeName) {
+    return new DirectExchange(exchangeName, true, true);
   }
 
   @Bean
@@ -44,11 +42,12 @@ public class PubSubApplication {
 
   @Bean
   MessageListenerContainer messageListenerContainer(
+      @Value("${app.queue.name}") String queueName,
       CachingConnectionFactory cachingConnectionFactory,
       DemoMessageListener messageListener) {
     DirectMessageListenerContainer messageListenerContainer = new DirectMessageListenerContainer();
     messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
-    messageListenerContainer.setQueueNames(QUEUE_NAME);
+    messageListenerContainer.setQueueNames(queueName);
     messageListenerContainer.setMessageListener(messageListener);
     messageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 
@@ -62,14 +61,16 @@ public class PubSubApplication {
 
   @Bean
   DemoMessagePublisher messagePublisher(
+      @Value("${app.exchange.name}") String exchangeName,
+      @Value("${app.queue.name}") String queueName,
       CachingConnectionFactory cachingConnectionFactory,
       RabbitTemplate rabbitTemplate,
       ConfirmCallback confirmCallback) {
 
     cachingConnectionFactory.setPublisherConfirmType(ConfirmType.CORRELATED);
 
-    rabbitTemplate.setExchange(EXCHANGE_NAME);
-    rabbitTemplate.setRoutingKey(QUEUE_NAME);
+    rabbitTemplate.setExchange(exchangeName);
+    rabbitTemplate.setRoutingKey(queueName);
     rabbitTemplate.setConnectionFactory(cachingConnectionFactory);
     rabbitTemplate.setConfirmCallback(confirmCallback);
 
