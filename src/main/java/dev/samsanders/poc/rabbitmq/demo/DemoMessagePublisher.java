@@ -19,7 +19,9 @@ public class DemoMessagePublisher {
   @Scheduled(fixedRate = 2000L)
   public void publishMessage() {
     String message = "test message" + counter.getAndIncrement();
+
     logger.info(String.format("Publishing message: %s", message));
+
     rabbitTemplate.convertAndSend(message);
   }
 

@@ -8,17 +8,22 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
-@Profile("!test") // TODO this should go away when testing approach are figured out
 public class DemoConfiguration {
+
+  @Profile("!test")
+  @EnableScheduling
+  public static class SchedulingConfiguration {
+
+  }
 
   @Bean
   Queue queue(@Value("${app.queue.name}") String queueName) {
@@ -44,6 +49,7 @@ public class DemoConfiguration {
     messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
     messageListenerContainer.setQueueNames(queueName);
     messageListenerContainer.setMessageListener(messageListener);
+    messageListenerContainer.setPrefetchCount(1);
     messageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 
     return messageListenerContainer;
@@ -60,20 +66,20 @@ public class DemoConfiguration {
       @Value("${app.queue.name}") String queueName,
       CachingConnectionFactory cachingConnectionFactory,
       RabbitTemplate rabbitTemplate,
-      ConfirmCallback confirmCallback) {
+      DemoConfirmCallback demoConfirmCallback) {
 
     cachingConnectionFactory.setPublisherConfirmType(ConfirmType.CORRELATED);
 
     rabbitTemplate.setExchange(exchangeName);
     rabbitTemplate.setRoutingKey(queueName);
     rabbitTemplate.setConnectionFactory(cachingConnectionFactory);
-    rabbitTemplate.setConfirmCallback(confirmCallback);
+    rabbitTemplate.setConfirmCallback(demoConfirmCallback);
 
     return new DemoMessagePublisher(rabbitTemplate);
   }
 
   @Bean
-  ConfirmCallback demoConfirmCallback() {
+  DemoConfirmCallback demoConfirmCallback() {
     return new DemoConfirmCallback();
   }
 
