@@ -1,4 +1,4 @@
-package dev.samsanders.poc.rabbitmq.pubsub;
+package dev.samsanders.poc.rabbitmq.demo;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;

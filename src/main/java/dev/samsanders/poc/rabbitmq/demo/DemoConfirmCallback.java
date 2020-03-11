@@ -1,4 +1,4 @@
-package dev.samsanders.poc.rabbitmq.pubsub;
+package dev.samsanders.poc.rabbitmq.demo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package dev.samsanders.poc.rabbitmq.pubsub;
+package dev.samsanders.poc.rabbitmq.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,4 +1,4 @@
-package dev.samsanders.poc.rabbitmq.pubsub;
+package dev.samsanders.poc.rabbitmq.demo;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
