@@ -8,10 +8,10 @@
 		<version>2.2.5.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>dev.samsanders.poc.rabbitmq</groupId>
-	<artifactId>pub-sub</artifactId>
+	<groupId>dev.samsanders.poc</groupId>
+	<artifactId>rabbitmq-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>pubsub</name>
+	<name>rabbitmq-demo</name>
 	<description>Demonstrate basic pub/sub with RabbitMQ</description>
 
 	<properties>

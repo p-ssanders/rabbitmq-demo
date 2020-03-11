@@ -10,7 +10,8 @@ Published messages are confirmed, and confirmation is processed asynchronously u
 A single message listener is registered to asynchronously consume messages from the queue.
 Messages are acknowledged manually to demonstrate the ability to process before acknowledgement.
 
-Both the exchange, and the queue are durable, and auto-delete.
+Both the exchange, and the queue are durable (the queue will survive a broker restart), and
+auto-delete (queue that has had at least one consumer is deleted when last consumer unsubscribes).
 
 ##  Build
 

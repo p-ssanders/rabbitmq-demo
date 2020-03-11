@@ -12,18 +12,13 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
-@SpringBootApplication
-@EnableScheduling
-public class PubSubApplication {
-
-  public static void main(String[] args) {
-    SpringApplication.run(PubSubApplication.class, args);
-  }
+@Configuration
+@Profile("!test") // TODO this should go away when testing approach are figured out
+public class DemoConfiguration {
 
   @Bean
   Queue queue(@Value("${app.queue.name}") String queueName) {
