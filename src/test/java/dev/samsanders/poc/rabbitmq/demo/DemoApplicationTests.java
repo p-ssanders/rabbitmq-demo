@@ -81,4 +81,10 @@ class DemoApplicationTests {
     // or maybe just check 0 messages in queue?
   }
 
+  @Test
+  @Disabled
+  void listener_isExclusive() {
+
+  }
+
 }

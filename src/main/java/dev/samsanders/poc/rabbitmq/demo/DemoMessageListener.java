@@ -23,6 +23,10 @@ public class DemoMessageListener implements ChannelAwareMessageListener {
     DemoMessage demoMessage = (DemoMessage) messageConverter.fromMessage(message);
     logger.info(String.format("Received message: %s", demoMessage));
 
+    // Before acknowledgement we could insert a row into a table for later processing
+    // e.g.: a separate thread that polls the table for new rows,
+    // and makes requests to external services for more details
+
     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 
     if (countDownLatch != null) {

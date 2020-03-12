@@ -13,6 +13,9 @@ Messages are acknowledged manually to demonstrate the ability to process before 
 Both the exchange, and the queue are durable (the queue will survive a broker restart), and
 auto-delete (queue that has had at least one consumer is deleted when last consumer unsubscribes).
 
+The integration tests use an embedded [Apache Qpid](https://qpid.apache.org/) AMQP broker to obviate
+the need for a dedicated AMQP broker, or network connectivity.
+
 ##  Build
 
 `./mvnw clean install`
