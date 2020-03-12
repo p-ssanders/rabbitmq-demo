@@ -10,6 +10,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.Confi
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,8 +61,8 @@ public class DemoConfiguration {
   }
 
   @Bean
-  DemoMessageListener demoMessageListener() {
-    return new DemoMessageListener();
+  DemoMessageListener demoMessageListener(Jackson2JsonMessageConverter jackson2JsonMessageConverter) {
+    return new DemoMessageListener(jackson2JsonMessageConverter);
   }
 
   @Bean
@@ -70,7 +71,8 @@ public class DemoConfiguration {
       @Value("${app.queue.name}") String queueName,
       CachingConnectionFactory cachingConnectionFactory,
       RabbitTemplate rabbitTemplate,
-      DemoConfirmCallback demoConfirmCallback) {
+      DemoConfirmCallback demoConfirmCallback,
+      Jackson2JsonMessageConverter jackson2JsonMessageConverter) {
 
     cachingConnectionFactory.setPublisherConfirmType(ConfirmType.CORRELATED);
 
@@ -78,6 +80,7 @@ public class DemoConfiguration {
     rabbitTemplate.setRoutingKey(queueName);
     rabbitTemplate.setConnectionFactory(cachingConnectionFactory);
     rabbitTemplate.setConfirmCallback(demoConfirmCallback);
+    rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter);
 
     return new DemoMessagePublisher(rabbitTemplate);
   }
@@ -85,6 +88,11 @@ public class DemoConfiguration {
   @Bean
   DemoConfirmCallback demoConfirmCallback() {
     return new DemoConfirmCallback();
+  }
+
+  @Bean
+  Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+    return new Jackson2JsonMessageConverter();
   }
 
 }

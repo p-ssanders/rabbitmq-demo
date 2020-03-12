@@ -18,11 +18,12 @@ public class DemoMessagePublisher {
 
   @Scheduled(fixedRate = 2000L)
   public void publishMessage() {
-    String message = "test message" + counter.getAndIncrement();
+    String text = "test text" + counter.getAndIncrement();
+    DemoMessage demoMessage = new DemoMessage(text);
 
-    logger.info(String.format("Publishing message: %s", message));
+    logger.info(String.format("Publishing message: %s", demoMessage));
 
-    rabbitTemplate.convertAndSend(message);
+    rabbitTemplate.convertAndSend(demoMessage);
   }
 
 }
