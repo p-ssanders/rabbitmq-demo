@@ -31,3 +31,5 @@ SPRING_RABBITMQ_VIRTUAL_HOST=<your rabbitmq virtual host, prob same as username>
 
 * https://spring.io/guides/gs/messaging-rabbitmq
 * https://www.rabbitmq.com/tutorials/amqp-concepts.html
+* https://qpid.apache.org/releases/qpid-broker-j-7.1.8/book/index.html
+* https://cwiki.apache.org/confluence/display/qpid/How+to+embed+Qpid+Broker-J

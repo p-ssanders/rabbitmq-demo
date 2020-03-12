@@ -49,6 +49,10 @@ public class DemoConfiguration {
     messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
     messageListenerContainer.setQueueNames(queueName);
     messageListenerContainer.setMessageListener(messageListener);
+
+    messageListenerContainer.setExclusive(true);
+    messageListenerContainer.setConsumersPerQueue(1);
+
     messageListenerContainer.setPrefetchCount(1);
     messageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 
