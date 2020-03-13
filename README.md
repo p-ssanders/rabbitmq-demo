@@ -1,6 +1,6 @@
 #   RabbitMQ Demo
 
-Demonstrate basic publish/subscribe with RabbitMQ.
+Exercise functionality of Spring AMQP & RabbitMQ.
 
 A single message publisher publishes test messages every two seconds to a direct exchange
 using a configured `RabbitTemplate`.
@@ -14,7 +14,7 @@ Both the exchange, and the queue are durable (the queue will survive a broker re
 auto-delete (queue that has had at least one consumer is deleted when last consumer unsubscribes).
 
 The integration tests use an embedded [Apache Qpid](https://qpid.apache.org/) AMQP broker to obviate
-the need for a dedicated AMQP broker, or network connectivity.
+the need for a dedicated AMQP broker, or network connectivity for automated tests.
 
 ##  Build
 
