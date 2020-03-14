@@ -1,6 +1,6 @@
 #   RabbitMQ Demo
 
-Exercise functionality of Spring AMQP & RabbitMQ.
+Demonstrate basic publish/subscribe with Spring AMQP.
 
 A single message publisher publishes test messages every two seconds to a direct exchange
 using a configured `RabbitTemplate`.
