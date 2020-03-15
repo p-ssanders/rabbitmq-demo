@@ -13,7 +13,7 @@ public class DemoConfirmCallback implements ConfirmCallback {
 
   @Override
   public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-    logger.info(String.format("Message publish confirmed: %s", ack));
+    logger.info(String.format("Message publish confirmed: %s %s", correlationData, ack));
 
     // Here we could update our event store/table to mark this event as published, maybe with a timestamp
     // to prevent it from being published again, and to provide audit information

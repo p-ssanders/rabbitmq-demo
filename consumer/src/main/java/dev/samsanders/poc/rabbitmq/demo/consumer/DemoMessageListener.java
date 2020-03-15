@@ -1,6 +1,7 @@
 package dev.samsanders.poc.rabbitmq.demo.consumer;
 
 import com.rabbitmq.client.Channel;
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class DemoMessageListener implements ChannelAwareMessageListener {
   }
 
   @Override
-  public void onMessage(Message message, Channel channel) throws Exception {
+  public void onMessage(Message message, Channel channel) throws IOException {
     logger.info(String.format("Received message: %s", message));
 
     DemoMessage demoMessage = (DemoMessage) messageConverter.fromMessage(message,
