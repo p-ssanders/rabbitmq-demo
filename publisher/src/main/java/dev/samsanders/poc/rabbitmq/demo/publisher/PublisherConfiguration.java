@@ -1,9 +1,6 @@
 package dev.samsanders.poc.rabbitmq.demo.publisher;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,24 +21,13 @@ public class PublisherConfiguration {
   }
 
   @Bean
-  Queue queue(@Value("${app.queue.name}") String queueName) {
-    return new Queue(queueName, true, false, true);
-  }
-
-  @Bean
-  DirectExchange exchange(@Value("${app.exchange.name}") String exchangeName) {
-    return new DirectExchange(exchangeName, true, true);
-  }
-
-  @Bean
-  Binding binding(Queue queue, DirectExchange exchange) {
-    return BindingBuilder.bind(queue).to(exchange).withQueueName();
+  FanoutExchange exchange(@Value("${app.exchange.name}") String exchangeName) {
+    return new FanoutExchange(exchangeName, true, true);
   }
 
   @Bean
   DemoMessagePublisher messagePublisher(
       @Value("${app.exchange.name}") String exchangeName,
-      @Value("${app.queue.name}") String queueName,
       CachingConnectionFactory cachingConnectionFactory,
       RabbitTemplate rabbitTemplate,
       DemoConfirmCallback demoConfirmCallback,
@@ -50,7 +36,6 @@ public class PublisherConfiguration {
     cachingConnectionFactory.setPublisherConfirmType(ConfirmType.CORRELATED);
 
     rabbitTemplate.setExchange(exchangeName);
-    rabbitTemplate.setRoutingKey(queueName);
     rabbitTemplate.setConnectionFactory(cachingConnectionFactory);
     rabbitTemplate.setConfirmCallback(demoConfirmCallback);
     rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter);

@@ -16,7 +16,7 @@ public class DemoMessagePublisher {
     this.rabbitTemplate = rabbitTemplate;
   }
 
-  @Scheduled(fixedRate = 10000L)
+  @Scheduled(fixedRate = 2000L)
   public void publishMessage() {
     String text = "test text" + counter.getAndIncrement();
     DemoMessage demoMessage = new DemoMessage(text);
