@@ -57,7 +57,7 @@ class ConsumerApplicationTests {
   }
 
   @Test
-  void listener_receivesMessage() throws InterruptedException {
+  void listeners_receiveMessages() throws InterruptedException {
     CountDownLatch countDownLatch = new CountDownLatch(2);
     demoMessageListenerA.setCountDownLatch(countDownLatch);
     demoMessageListenerB.setCountDownLatch(countDownLatch);

@@ -1,35 +1,48 @@
 #   RabbitMQ Demo
 
-Demonstrate publish/subscribe with Spring AMQP.
+Demonstrate publish/subscribe with Spring AMQP and RabbitMQ.
 
 There are two applications:
 *   `publisher`
 *   `consumer`
 
+Unit tests and integration tests help document the functionality of each.
+
 ##  Publisher
 The `publisher` application creates a single message publisher, and schedules it to publish test
-messages every two seconds to a fanout exchange named `app-events` using a configured
-`RabbitTemplate`.
+messages every two seconds to a fanout exchange named `app-events`. Messages are serialized to JSON
+using a `Jackson2JsonMessageConverter`.
 
-Published messages are confirmed, and confirmation is processed asynchronously using the
-`DemoConfirmCallback`. A `ConfirmCallback` demonstrates how message delivery can be guaranteed by
-providing an opportunity to mark messages as published once the callback is invoked. For example,
-the callback would be a good place to update a row in a table with a `published_date_time`.
+Published messages are confirmed by the broker, and the confirmation is processed asynchronously
+using the `DemoConfirmCallback`.
 
-The exchange is non-durable (the exchange will be deleted if the broker shuts down), and auto-delete
-(exchange is deleted when all queues have finished using it).
+The `ConfirmCallback` demonstrates how message delivery can be guaranteed by providing an
+opportunity to mark messages as published once the callback is invoked. For example, the callback
+would be a good place to update a corresponding row in a table that contains events to be published
+with the `published_date_time` to prevent re-publishing, and provide audit information.
+
+The exchange is:
+*   non-durable (the exchange will be deleted if the broker shuts down)
+*   auto-delete (exchange is deleted when all queues have finished using it)
 
 ##  Consumer
-The `consumer` application creates a queue named `consumer-app` and binds it to an exchange named
-`app-events`.
-A single message listener is registered to asynchronously consume messages from the queue.
+The `consumer` application creates two `AnonymousQueue`s, and binds them to an exchange named
+`demo-app-events`. The queues are named using a `UUIDNamingStrategy`.
 
-Messages are acknowledged manually to demonstrate the ability to process before acknowledgement.
-For example, the listener could insert a row into a table for later processing before
-acknowledging receipt of the message to the broker.
+A message listener is registered to asynchronously, and exclusively consume messages from each
+queue. Messages are deserialized from JSON using a `Jackson2JsonMessageConverter`. Since the type of
+the message published by the `publisher` doesn't exist in the `consumer` app, a "conversion hint" is
+supplied to the converter at runtime.
 
-The queue is durable (the queue will survive a broker restart), and auto-delete (queue that has had
-at least one consumer is deleted when last consumer unsubscribes).
+Messages are manually acknowledged to demonstrate the ability to process the message before
+acknowledgement.
+For example, the listener could insert a row into a table before acknowledging receipt of the
+message to the broker.
+
+The queues are:
+*   non-durable (the queue will be deleted if the broker shuts down)
+*   exclusive (can be used by only one connection)
+*   auto-delete (will be deleted when consumer unsubscribes)
 
 ##  Build
 
@@ -45,8 +58,17 @@ Start the publisher
 SPRING_RABBITMQ_HOST=<your rabbitmq host> \
 SPRING_RABBITMQ_USERNAME=<your rabbitmq username> \
 SPRING_RABBITMQ_PASSWORD=<your rabbitmq password> \
-SPRING_RABBITMQ_VIRTUAL_HOST=<your rabbitmq virtual host, prob same as username> \
+SPRING_RABBITMQ_VIRTUAL_HOST=<your rabbitmq virtual host> \
 ./mvnw spring-boot:run -pl publisher
+```
+
+Start the consumers
+```shell script
+SPRING_RABBITMQ_HOST=<your rabbitmq host> \
+SPRING_RABBITMQ_USERNAME=<your rabbitmq username> \
+SPRING_RABBITMQ_PASSWORD=<your rabbitmq password> \
+SPRING_RABBITMQ_VIRTUAL_HOST=<your rabbitmq virtual host> \
+./mvnw spring-boot:run -pl consumer
 ```
 
 ##  References
