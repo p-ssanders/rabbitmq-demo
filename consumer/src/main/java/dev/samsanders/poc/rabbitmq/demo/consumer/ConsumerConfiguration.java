@@ -24,30 +24,47 @@ public class ConsumerConfiguration {
   }
 
   @Bean
-  Queue queue() {
+  Queue queueA() {
     return new AnonymousQueue(new UUIDNamingStrategy());
   }
 
   @Bean
-  Binding binding(Queue queue, FanoutExchange exchange) {
-    return BindingBuilder.bind(queue).to(exchange);
+  Binding bindingA(Queue queueA, FanoutExchange exchange) {
+    return BindingBuilder.bind(queueA).to(exchange);
   }
 
   @Bean
-  MessageListenerContainer messageListenerContainer(
-      Queue queue,
+  MessageListenerContainer messageListenerContainerA(
+      Queue queueA,
       CachingConnectionFactory cachingConnectionFactory,
       DemoMessageListener messageListener) {
-    DirectMessageListenerContainer messageListenerContainer = new DirectMessageListenerContainer();
+    DirectMessageListenerContainer messageListenerContainer = messageListenerContainer();
     messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
-    messageListenerContainer.setQueueNames(queue.getName());
+    messageListenerContainer.setQueueNames(queueA.getName());
     messageListenerContainer.setMessageListener(messageListener);
 
-    messageListenerContainer.setExclusive(true);
-    messageListenerContainer.setConsumersPerQueue(1);
+    return messageListenerContainer;
+  }
 
-    messageListenerContainer.setPrefetchCount(1);
-    messageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+  @Bean
+  Queue queueB() {
+    return new AnonymousQueue(new UUIDNamingStrategy());
+  }
+
+  @Bean
+  Binding bindingB(Queue queueB, FanoutExchange exchange) {
+    return BindingBuilder.bind(queueB).to(exchange);
+  }
+
+  @Bean
+  MessageListenerContainer messageListenerContainerB(
+      Queue queueB,
+      CachingConnectionFactory cachingConnectionFactory,
+      DemoMessageListener messageListener) {
+    DirectMessageListenerContainer messageListenerContainer = messageListenerContainer();
+    messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
+    messageListenerContainer.setQueueNames(queueB.getName());
+    messageListenerContainer.setMessageListener(messageListener);
 
     return messageListenerContainer;
   }
@@ -60,6 +77,16 @@ public class ConsumerConfiguration {
   @Bean
   Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
     return new Jackson2JsonMessageConverter();
+  }
+
+  private DirectMessageListenerContainer messageListenerContainer() {
+    DirectMessageListenerContainer messageListenerContainer = new DirectMessageListenerContainer();
+    messageListenerContainer.setExclusive(true);
+    messageListenerContainer.setConsumersPerQueue(1);
+    messageListenerContainer.setPrefetchCount(1);
+    messageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+
+    return messageListenerContainer;
   }
 
 }
