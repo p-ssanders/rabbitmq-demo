@@ -1,5 +1,6 @@
 package dev.samsanders.poc.rabbitmq.demo.consumer;
 
+import org.springframework.amqp.core.Queue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +8,7 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile("test")
-public class ConsumerDemoTestConfiguration {
+public class ConsumerTestConfiguration {
 
   @Value("${test.broker.config.file-location}")
   String brokerConfigFileLocation;
@@ -15,6 +16,16 @@ public class ConsumerDemoTestConfiguration {
   @Bean
   public EmbeddedAmqpBroker embeddedAmqpBroker() {
     return new EmbeddedAmqpBroker(brokerConfigFileLocation);
+  }
+
+  @Bean
+  Queue queueA() {
+    return new Queue("test-queue-A");
+  }
+
+  @Bean
+  Queue queueB() {
+    return new Queue("test-queue-B");
   }
 
 }

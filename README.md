@@ -16,8 +16,8 @@ Published messages are confirmed, and confirmation is processed asynchronously u
 providing an opportunity to mark messages as published once the callback is invoked. For example,
 the callback would be a good place to update a row in a table with a `published_date_time`.
 
-The exchange is durable (the exchange will survive a broker restart), and auto-delete (exchange is
-deleted when all queues have finished using it).
+The exchange is non-durable (the exchange will be deleted if the broker shuts down), and auto-delete
+(exchange is deleted when all queues have finished using it).
 
 ##  Consumer
 The `consumer` application creates a queue named `consumer-app` and binds it to an exchange named

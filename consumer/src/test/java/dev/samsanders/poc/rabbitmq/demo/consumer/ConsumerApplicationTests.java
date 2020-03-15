@@ -2,6 +2,7 @@ package dev.samsanders.poc.rabbitmq.demo.consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterAll;
@@ -10,7 +11,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,12 +28,23 @@ class ConsumerApplicationTests {
   @Autowired
   EmbeddedAmqpBroker embeddedAmqpBroker;
 
+  @Value("${app.exchange.name}")
+  String exchangeName;
+
   @Autowired
-  DemoMessageListener demoMessageListener;
+  DemoMessageListener demoMessageListenerA;
+
+  @Autowired
+  DemoMessageListener demoMessageListenerB;
+
+  @Autowired
+  RabbitTemplate rabbitTemplate;
 
   @BeforeAll
   void beforeAll() {
     embeddedAmqpBroker.start();
+    rabbitTemplate.setExchange(exchangeName);
+    rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
   }
 
   @AfterAll
@@ -42,12 +57,12 @@ class ConsumerApplicationTests {
   }
 
   @Test
-  @Disabled
   void listener_receivesMessage() throws InterruptedException {
-    CountDownLatch countDownLatch = new CountDownLatch(1);
-    demoMessageListener.setCountDownLatch(countDownLatch);
+    CountDownLatch countDownLatch = new CountDownLatch(2);
+    demoMessageListenerA.setCountDownLatch(countDownLatch);
+    demoMessageListenerB.setCountDownLatch(countDownLatch);
 
-//    demoMessagePublisher.publishMessage(); TODO
+    rabbitTemplate.convertAndSend(new TestMessage("some-text"));
 
     countDownLatch.await(5000, TimeUnit.MILLISECONDS);
     assertEquals(0, countDownLatch.getCount());
@@ -64,6 +79,43 @@ class ConsumerApplicationTests {
   @Disabled
   void listener_isExclusive() {
 
+  }
+
+  private static class TestMessage {
+
+    private final String text;
+
+    private TestMessage(String text) {
+      this.text = text;
+    }
+
+    public String getText() {
+      return text;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof TestMessage)) {
+        return false;
+      }
+      TestMessage that = (TestMessage) o;
+      return Objects.equals(text, that.text);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(text);
+    }
+
+    @Override
+    public String toString() {
+      return "TestMessage{" +
+          "text='" + text + '\'' +
+          '}';
+    }
   }
 
 }

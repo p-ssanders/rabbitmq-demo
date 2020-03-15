@@ -14,16 +14,18 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class ConsumerConfiguration {
 
   @Bean
   FanoutExchange exchange(@Value("${app.exchange.name}") String exchangeName) {
-    return new FanoutExchange(exchangeName, true, true);
+    return new FanoutExchange(exchangeName, false, true);
   }
 
   @Bean
+  @Profile("!test")
   Queue queueA() {
     return new AnonymousQueue(new UUIDNamingStrategy());
   }
@@ -37,16 +39,22 @@ public class ConsumerConfiguration {
   MessageListenerContainer messageListenerContainerA(
       Queue queueA,
       CachingConnectionFactory cachingConnectionFactory,
-      DemoMessageListener messageListener) {
+      DemoMessageListener demoMessageListenerA) {
     DirectMessageListenerContainer messageListenerContainer = messageListenerContainer();
     messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
     messageListenerContainer.setQueueNames(queueA.getName());
-    messageListenerContainer.setMessageListener(messageListener);
+    messageListenerContainer.setMessageListener(demoMessageListenerA);
 
     return messageListenerContainer;
   }
 
   @Bean
+  DemoMessageListener demoMessageListenerA(Jackson2JsonMessageConverter jackson2JsonMessageConverter) {
+    return new DemoMessageListener(jackson2JsonMessageConverter);
+  }
+
+  @Bean
+  @Profile("!test")
   Queue queueB() {
     return new AnonymousQueue(new UUIDNamingStrategy());
   }
@@ -60,17 +68,16 @@ public class ConsumerConfiguration {
   MessageListenerContainer messageListenerContainerB(
       Queue queueB,
       CachingConnectionFactory cachingConnectionFactory,
-      DemoMessageListener messageListener) {
+      DemoMessageListener demoMessageListenerB) {
     DirectMessageListenerContainer messageListenerContainer = messageListenerContainer();
     messageListenerContainer.setConnectionFactory(cachingConnectionFactory);
     messageListenerContainer.setQueueNames(queueB.getName());
-    messageListenerContainer.setMessageListener(messageListener);
+    messageListenerContainer.setMessageListener(demoMessageListenerB);
 
     return messageListenerContainer;
   }
-
   @Bean
-  DemoMessageListener demoMessageListener(Jackson2JsonMessageConverter jackson2JsonMessageConverter) {
+  DemoMessageListener demoMessageListenerB(Jackson2JsonMessageConverter jackson2JsonMessageConverter) {
     return new DemoMessageListener(jackson2JsonMessageConverter);
   }
 

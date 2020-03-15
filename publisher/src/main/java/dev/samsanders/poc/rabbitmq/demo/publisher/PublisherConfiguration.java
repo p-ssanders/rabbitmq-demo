@@ -22,7 +22,7 @@ public class PublisherConfiguration {
 
   @Bean
   FanoutExchange exchange(@Value("${app.exchange.name}") String exchangeName) {
-    return new FanoutExchange(exchangeName, true, true);
+    return new FanoutExchange(exchangeName, false, true);
   }
 
   @Bean

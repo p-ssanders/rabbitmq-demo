@@ -18,7 +18,7 @@ class DemoMessageListenerTest {
     DemoMessageListener demoMessageListener = new DemoMessageListener(realMessageConverter);
 
     Channel mockChannel = mock(Channel.class);
-    byte[] messageBody = "{\"text\":\"test 1\"}".getBytes(Charsets.UTF_8);
+    byte[] messageBody = "{\"text\":\"some-test-message\"}".getBytes(Charsets.UTF_8);
     MessageProperties messageProperties = new MessageProperties();
     messageProperties.setContentType("application/json");
     messageProperties.setContentEncoding("UTF-8");
