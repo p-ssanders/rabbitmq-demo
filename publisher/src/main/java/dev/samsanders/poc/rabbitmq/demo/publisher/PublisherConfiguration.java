@@ -27,6 +27,7 @@ public class PublisherConfiguration {
 
   @Bean
   DemoMessagePublisher messagePublisher(
+      @Value("${app.message.prefix}") String messagePrefix,
       @Value("${app.exchange.name}") String exchangeName,
       CachingConnectionFactory cachingConnectionFactory,
       RabbitTemplate rabbitTemplate,
@@ -40,7 +41,7 @@ public class PublisherConfiguration {
     rabbitTemplate.setConfirmCallback(demoConfirmCallback);
     rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter);
 
-    return new DemoMessagePublisher(rabbitTemplate);
+    return new DemoMessagePublisher(rabbitTemplate, messagePrefix);
   }
 
   @Bean
