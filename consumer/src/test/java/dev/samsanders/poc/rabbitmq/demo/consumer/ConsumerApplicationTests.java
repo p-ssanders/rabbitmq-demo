@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,11 +40,20 @@ class ConsumerApplicationTests {
   @Autowired
   RabbitTemplate rabbitTemplate;
 
+  @Autowired
+  Queue queueA;
+
+  @Autowired
+  Queue queueB;
+
   @BeforeAll
   void beforeAll() {
     embeddedAmqpBroker.start();
     rabbitTemplate.setExchange(exchangeName);
-    rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+
+    // Unset queue declaration argument that is not supported by Qpid
+    queueA.setMasterLocator(null);
+    queueB.setMasterLocator(null);
   }
 
   @AfterAll

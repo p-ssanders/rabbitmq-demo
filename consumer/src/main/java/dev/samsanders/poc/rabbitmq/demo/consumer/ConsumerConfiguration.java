@@ -25,7 +25,6 @@ public class ConsumerConfiguration {
   }
 
   @Bean
-  @Profile("!test")
   Queue queueA() {
     return new AnonymousQueue(new UUIDNamingStrategy());
   }
@@ -54,7 +53,6 @@ public class ConsumerConfiguration {
   }
 
   @Bean
-  @Profile("!test")
   Queue queueB() {
     return new AnonymousQueue(new UUIDNamingStrategy());
   }
