@@ -10,7 +10,7 @@ Unit tests and integration tests help document the functionality of each.
 
 ##  Publisher
 The `publisher` application creates a single message publisher, and schedules it to publish test
-messages every two seconds to a fanout exchange named `app-events`. Messages are serialized to JSON
+messages every two seconds to a fanout exchange named `demo-app-events`. Messages are serialized to JSON
 using a `Jackson2JsonMessageConverter`.
 
 Published messages are confirmed by the broker, and the confirmation is processed asynchronously
@@ -73,7 +73,6 @@ SPRING_RABBITMQ_VIRTUAL_HOST=<your rabbitmq virtual host> \
 
 ##  References
 
-* https://spring.io/guides/gs/messaging-rabbitmq
+* https://docs.spring.io/spring-amqp/reference/html
 * https://www.rabbitmq.com/tutorials/amqp-concepts.html
-* https://qpid.apache.org/releases/qpid-broker-j-7.1.8/book/index.html
 * https://cwiki.apache.org/confluence/display/qpid/How+to+embed+Qpid+Broker-J
