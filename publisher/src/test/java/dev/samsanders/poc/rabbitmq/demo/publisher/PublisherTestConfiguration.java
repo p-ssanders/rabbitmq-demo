@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile("test")
-public class PublisherDemoTestConfiguration {
+public class PublisherTestConfiguration {
 
   @Value("${test.broker.config.file-location}")
   String brokerConfigFileLocation;
